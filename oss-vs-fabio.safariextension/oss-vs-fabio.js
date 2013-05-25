@@ -133,7 +133,7 @@ function parseMessage(message) {
   var thanks = ["thanks", "thanks a lot", "cool work", "nice work"].random()
   var nice = ["awesome", "cool", "brilliant", "beautiful", "great"].random()
 
-  message = message.replace("[name]", authorName)
+  message = message.replace("[name]", "@" + authorName)
   message = message.replace("[nice_word]", nice)
   message = message.replace("[thanks_word]", thanks)
   return message.sentenceCase()
