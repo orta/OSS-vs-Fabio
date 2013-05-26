@@ -1,0 +1,118 @@
+<html>
+<body>
+  <link rel="stylesheet" href="oss-vs-fabio.safariextension/css/popover.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+  <p style="font-size:33px">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p style="font-size:33px">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p style="font-size:33px">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p style="font-size:33px">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p> 
+        <p style="font-size:33px">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        
+        
+        <div id="or_background"></div>
+          <div id = "or_popover">
+            <h2>Buttons</h2>
+            <p>If a button has merge selected it's only shown in Pull Requests, otherwise the button will be in Issues / PRs.</p>
+            <div class="table" >
+                <table id="buttons">
+                    <tr>
+                        <td>Message</td>
+                        <td>Close?</td>
+                        <td>Merge?</td>
+                    </tr>
+                    <tr>
+                        <td>
+                          <textarea class="message" onblur="saveRow(0)">Hey</textarea>
+                        </td>
+                        <td><center>
+                          <input type="checkbox" name="Close" checked=true onchange="saveRow(0)">
+                        </center></td>
+                        <td><center>
+                          <input type="checkbox" name="Merge" value="" onchange="saveRow(0)">
+                        </center></td>
+                    </tr>
+                </table>
+            </div>
+          </div>
+  </body>
+  
+  <script>
+    var buttonsString = localStorage.githubButtons;
+    if(typeof buttonsString == 'undefined') {
+      setupDefaults();
+    }
+    
+    var buttonsArray = JSON.parse(localStorage.githubButtons);   
+    var tableElement = document.getElementById("buttons")
+    var html = "<tr><td>Button Title</td><td>Message</td><td>Close?</td><td>Merge?</td></tr>"
+    
+    for (var i = 0; i < buttonsArray.length; i++){ 
+      var button = buttonsArray[i]
+      var functionString = "saveRow(" + i.toString() + ")"
+
+      html += "<tr><td>"
+      html += "<input onblur='" + functionString + "' value='" + button.title + "'>"
+      html += "</td><td>"
+
+      
+      html += "<textarea class='message' onblur='" + functionString + "'>" + button.comment + "</textarea>"
+      html += "</td><td><center>"
+      
+      if(button.close){
+        html += "<input type='checkbox' class='close' name='Close' checked=true onchange=" + functionString + ">"
+      } else {
+        html += "<input type='checkbox' class='close' name='Close' onchange=" + functionString + ">"
+      }
+      
+      html += "</center></td><td><center>"
+
+      if(button.merge){
+        html += "<input type='checkbox' name='Merge' class='merge' checked=true onchange=" + functionString + ">"
+      }else {
+          html += "<input type='checkbox' class='merge' name='Merge' onchange=" + functionString + ">"
+      }
+
+      html += "</center></td></tr>"
+    }
+    
+    tableElement.innerHTML = html;
+  
+    function saveRow(index){
+      var tableRows = document.getElementById("buttons").getElementsByTagName("tr");
+      var buttons = []
+      console.log("saving")
+      
+      // skip the first, its the headers
+      for (var i = 1; i < tableRows.length; i++){ 
+        var row = tableRows[i]
+        var object = {
+          title: row.getElementsByTagName("input")[0].value,
+          comment: row.getElementsByTagName("textarea")[0].value
+        }
+        
+        if(row.getElementsByClassName("merge")[0].checked){
+          object["merge"] = true
+        }
+        
+        if(row.getElementsByClassName("close")[0].checked){
+          object["close"] = true
+        }
+
+        buttons.push(object)
+      }
+      
+      localStorage.githubButtons = JSON.stringify(buttons);
+      
+    }
+  
+    function setupDefaults(){
+      var defaults = [
+        { title: "close", comment:"Thanks [name] but you should read the mailing list.", close: true, merge:false },
+        { title: "merge", comment:"Awesome, thanks [name], merging!", close: true, merge:true},
+        { title: "comment", comment:"Auto comment with no close", close: false}
+      ]
+      localStorage.githubButtons = JSON.stringify(defaults);
+    }
+  </script>
+  
+  </html>
