@@ -9,16 +9,16 @@
 }
 
 #or_popover {
-  width: 700px; 
-  height: 400px; 
+  width: 860px; 
+  height: 480px; 
   border: 1px solid black; 
   position: fixed; 
   top: 44px; 
   left: 50%; 
-  margin: 0 0 0 -351px;
+  margin: 0 0 0 -431px !important;
   background-color:white;
   z-index: 201;
-  padding: 24px;
+  padding: 24px !important;
   overflow:scroll;
 }
 
@@ -28,8 +28,9 @@
 }
 
 .table {
-	margin:0px;padding:0px;
-	width:100%;
+	margin:0px;
+  padding:0px;
+	width:80%;
 	border:1px solid #3f7f00;
 	
 	-webkit-border-radius:3px;

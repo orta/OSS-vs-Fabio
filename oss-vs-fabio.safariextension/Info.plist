@@ -27,6 +27,10 @@
 				<string>oss-vs-fabio.js</string>
 			</array>
 		</dict>
+		<key>Stylesheets</key>
+		<array>
+			<string>css/popover.css</string>
+		</array>
 	</dict>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
