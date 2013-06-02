@@ -8,19 +8,17 @@ var authorName = document.getElementsByClassName("discussion-topic-author")[0].g
 
 var showRandomNice = true
 
-function setup(){
+var closeButtonGroup;
+var commentButtonGroup;
 
-  // hide any tips
-  var tipElement = document.getElementsByClassName("tip")[0]
-  if(tipElement) {
-    tipElement.style.display = "none"
-  }
-  
+
+function bootstrap(){
   // try get buttons as a string form the local storage
   var buttonsString = localStorage.githubButtons;
   if(typeof buttonsString == 'undefined' || buttonsString.length < 4) {
     setupDefaults();
   }
+  createGroups()
 }
 
 function setupDefaults(){
@@ -32,8 +30,30 @@ function setupDefaults(){
   localStorage.githubButtons = JSON.stringify(defaults);
 }
 
-function addButtonForObject(object){
+function createGroups(){
+  closeButtonGroupTitle = document.createElement('span');
+  closeButtonGroupTitle.setAttribute('style', 'float: left; position: absolute; margin: 40px 0px 0px 0px;');
+  closeButtonGroupTitle.textContent = 'Close / Merge';
+  closeButtonGroup = document.createElement('div');
+  closeButtonGroup.className = 'button-group';
+  closeButtonGroup.setAttribute('style', 'float: left; margin: 0px 0px 0px 0px;');
+
+  commentButtonGroupTitle = document.createElement('span');
+  commentButtonGroupTitle.setAttribute('style', 'float: left; position: absolute; margin: 40px 0px 0px 0px;');
+  commentButtonGroupTitle.textContent = 'Comment';
+  commentButtonGroup = document.createElement('div');
+  commentButtonGroup.className = 'button-group';
+  commentButtonGroup.setAttribute('style', 'float: left;'); 
+  
   var formActions = getCommentButtonsToolbar();
+  formActions.appendChild(closeButtonGroup)
+  closeButtonGroup.appendChild(closeButtonGroupTitle)
+  
+  formActions.appendChild(commentButtonGroup)
+  commentButtonGroup.appendChild(commentButtonGroupTitle)  
+}
+
+function addButtonForObject(object){
   var commentTextBox = getCommentTextBox()
   
   var initialButton = document.createElement('a')
@@ -47,7 +67,11 @@ function addButtonForObject(object){
     performActionForObject(object)
   }
   
-  formActions.appendChild(initialButton);
+  if(object["close"] || object["merge"]){
+    closeButtonGroup.appendChild(initialButton);
+  } else {
+    commentButtonGroup.appendChild(initialButton);
+  }
 }
 
 function performActionForObject(object){
@@ -71,14 +95,14 @@ function classNameForObject(object){
   if(object["close"]){
     if(object["merge"]){
       // green for merge
-      return "minibutton primary"
+      return "button primary"
     } else {
       // red for close
-      return "minibutton danger"
+      return "button danger"
     }
   } else {
     // white for comment
-    return "minibutton"
+    return "button"
   }
 }
 
@@ -131,21 +155,47 @@ function randomMergeMessage() {
     "Very [nice_word] [thanks_word] for the PR!",
     "[nice_word]! [thanks_word] [name].",
     "[thanks_word] [name].",
-    "Looks [thanks_word] [name]."]
-  return { title: "⚄", comment: message.random(), close: true, merge:true}
+    "Looks [nice_word] [thanks_word] [name]."]
+  return { title: "🎲", comment: message.random(), close: true, merge:true}
 }
 
 // Add the thanks / nice / [name] to a comment
 
 function parseMessage(message) {
   var thanks = ["thanks", "thanks a lot", "cool work", "nice work"].random()
-  var nice = ["awesome", "cool", "brilliant", "beautiful", "great"].random()
+  var nice = ["awesome", "cool", "brilliant", "beautiful", "great", "good"].random()
 
   message = message.replace("[name]", "@" + authorName)
   message = message.replace("[nice_word]", nice)
   message = message.replace("[thanks_word]", thanks)
   return message.sentenceCase()
 }
+
+// Does what is says on the tin
+
+  function addButtonsToToolbar(){
+  for (var i = 0; i < comments.length; i++){ 
+    addButtonForObject(comments[i]);
+  }
+
+  addSettings();
+}
+
+// Use a MutationObserver to note when the comment field changes to re-add the buttons
+
+function setupChangeWatcher(){
+  mutationObserver = typeof WebKitMutationObserver !== "undefined" && WebKitMutationObserver !== null ? WebKitMutationObserver : MutationObserver;
+  observer = new mutationObserver(function(mutations) {
+    return mutations.forEach(function(mutation) {
+      return addButtonsToToolbar();
+    })
+  })
+  
+  observer.observe(this.actions, {
+    childList: true
+  })
+}
+
 
 // once a popover is in, fill it with content
 
@@ -247,13 +297,6 @@ function saveRow(index){
   
   localStorage.githubButtons = JSON.stringify(buttons);
 }
-
-// Adds the CSS needed for the popover
-
-function addCSSFile(){
-  var path = safari.extension.baseURI + 'css/popover.css'
-  document.write('<link rel="stylesheet" type="text/css" href="' + path +'">')
-}
  
 // Adds the background and table
 
@@ -306,32 +349,31 @@ function deleteRow(element) {
   createPopoverContent();
 }
 
+function addSettings(){
+  var formActions = getCommentButtonsToolbar();
+  var initialButton = document.createElement('a')
+  initialButton.className = "minibutton"
+  initialButton.onclick = showModal
+  var buttonText = document.createTextNode("✨")
+  initialButton.appendChild(buttonText)
+  formActions.appendChild(initialButton) 
+}
+
 function showModal(){
   createPopover()
   createPopoverContent()
 }
 
-function addSettings(){
-
-  var formActions = getCommentButtonsToolbar();
-  var initialButton = document.createElement('a')
-  initialButton.className = "minibutton"
-  initialButton.onclick = showModal
-  var buttonText = document.createTextNode("⚙")
-  initialButton.appendChild(buttonText)
-  formActions.appendChild(initialButton)
-  
-}
+// safari.application.addEventListener('message', handleMessage, false);
+// safari.application.addEventListener('message', handleMessage, false);
+// safari.application.addEventListener('message', handleMessage, false);
+  // 
 
 // --------------------------------------------------
 
-setup();
-var comments = JSON.parse(localStorage.githubButtons);
+bootstrap()
+//setupChangeWatcher()
+var comments = JSON.parse(localStorage.githubButtons)
 
 if(showRandomNice) comments.push( randomMergeMessage() )
-
-for (var i = 0; i < comments.length; i++){ 
-  addButtonForObject(comments[i]);
-}
-
-addSettings();
+addButtonsToToolbar();

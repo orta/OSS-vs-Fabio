@@ -1,3 +1,7 @@
+.form-actions .tip {
+  display: none !important;
+}
+
 #or_background {
      position: fixed;
      left: 0;

@@ -32,6 +32,8 @@
 			<string>css/popover.css</string>
 		</array>
 	</dict>
+	<key>Description</key>
+	<string>Custom Github merge/comment buttons for </string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
@@ -48,5 +50,7 @@
 			<string>Some</string>
 		</dict>
 	</dict>
+	<key>Website</key>
+	<string>https://github.com/orta/OSS-Vs-Fabio</string>
 </dict>
 </plist>
